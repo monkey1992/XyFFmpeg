@@ -1,0 +1,14 @@
+prefix=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a
+exec_prefix=${prefix}
+libdir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a/lib
+includedir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a/include
+
+Name: libswscale
+Description: FFmpeg image rescaling library
+Version: 6.1.100
+Requires: 
+Requires.private: libavutil >= 57.7.100
+Conflicts:
+Libs: -L${libdir}  -lswscale 
+Libs.private: -lm
+Cflags: -I${includedir}

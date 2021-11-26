@@ -1,0 +1,14 @@
+prefix=/Users/xiaoyu/OpenSource/ffmpeg/android/armv8-a
+exec_prefix=${prefix}
+libdir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv8-a/lib
+includedir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv8-a/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 57.7.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lm
+Cflags: -I${includedir}

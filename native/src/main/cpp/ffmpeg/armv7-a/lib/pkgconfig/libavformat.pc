@@ -1,0 +1,14 @@
+prefix=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a
+exec_prefix=${prefix}
+libdir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a/lib
+includedir=/Users/xiaoyu/OpenSource/ffmpeg/android/armv7-a/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 59.8.100
+Requires: 
+Requires.private: libavcodec >= 59.12.100, libswresample >= 4.0.100, libavutil >= 57.7.100
+Conflicts:
+Libs: -L${libdir}  -lavformat 
+Libs.private: -lm -lz
+Cflags: -I${includedir}
