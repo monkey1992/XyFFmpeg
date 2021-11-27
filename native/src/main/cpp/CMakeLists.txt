@@ -20,6 +20,63 @@ add_library( # Sets the name of the library.
         jni/video_player.c
         )
 
+add_library(avcodec
+        SHARED
+        IMPORTED)
+set_target_properties(avcodec
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libavcodec.so
+        )
+
+add_library(avdevice
+        SHARED
+        IMPORTED)
+set_target_properties(avdevice
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libavdevice.so)
+
+add_library(avfilter
+        SHARED
+        IMPORTED)
+set_target_properties(avfilter
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libavfilter.so)
+
+add_library(avformat
+        SHARED
+        IMPORTED)
+set_target_properties(avformat
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libavformat.so)
+
+add_library(avutil
+        SHARED
+        IMPORTED)
+set_target_properties(avutil
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libavutil.so)
+
+add_library(postproc
+        SHARED
+        IMPORTED)
+set_target_properties(postproc
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libpostproc.so)
+
+add_library(swresample
+        SHARED
+        IMPORTED)
+set_target_properties(swresample
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libswresample.so)
+
+add_library(swscale
+        SHARED
+        IMPORTED)
+set_target_properties(swscale
+        PROPERTIES IMPORTED_LOCATION
+        ${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libswscale.so)
+
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
 # default, you only need to specify the name of the public NDK library
@@ -42,10 +99,18 @@ target_link_libraries( # Specifies the target library.
 
         # Links the target library to the log library
         # included in the NDK.
+        avcodec
+        avdevice
+        avfilter
+        avformat
+        avutil
+        postproc
+        swresample
+        swscale
         ${log-lib})
 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 
 # 设置生成的.so动态库的输出路径
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../jniLibs/${ANDROID_ABI})
+#SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/native/libs/${ANDROID_ABI})
