@@ -46,13 +46,14 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     avdevice_register_all();
 
     AVFormatContext *pFormatContext = avformat_alloc_context();
+
     // 打开视频文件
     if (avformat_open_input(&pFormatContext, file_name, NULL, NULL) != 0) {
         printLog(ANDROID_LOG_DEBUG, "Couldn't open file:%s\n", file_name);
         return -1;
     }
 
-    // 检索信息流
+    // 检索流信息
     if (avformat_find_stream_info(pFormatContext, NULL) < 0) {
         printLog(ANDROID_LOG_DEBUG, "Couldn't find stream information.");
         return -1;
@@ -71,11 +72,14 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
         return -1; // 找不到视频流，返回-1
     }
 
-    // 得到视频流的编解码器上下文环境的指针
-    AVCodecParameters *pCodecCtx = pFormatContext->streams[videoStream]->codecpar;
+    AVCodecParameters *avCodecParameters = pFormatContext->streams[videoStream]->codecpar;
 
     // 找到视频流对应的解码器
-    AVCodec *pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+    const AVCodec *pCodec = avcodec_find_decoder(avCodecParameters->codec_id);
+
+    // 得到视频流的编解码器上下文环境的指针
+    AVCodecContext *pCodecCtx = avcodec_alloc_context3(pCodec);
+
     if (pCodec == NULL) {
         printLog(ANDROID_LOG_DEBUG, "Codec not found.");
         return -1; // 找不到视频解码器，返回-1
@@ -123,7 +127,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     struct SwsContext *sws_ctx = sws_getContext(
             pCodecCtx->width,
             pCodecCtx->height,
-            pCodecCtx->format,
+            pCodecCtx->pix_fmt,
             pCodecCtx->width,
             pCodecCtx->height,
             AV_PIX_FMT_RGBA,
@@ -136,7 +140,8 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     while (av_read_frame(pFormatContext, &packet) >= 0) {
         // 判断Packet（音视频压缩数据）是否是视频流
         if (packet.stream_index == videoStream) {
-            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            pCodec->decode(pCodecCtx, pFrame, &frameFinished, &packet);
+//            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 
             // 并不是解码一次就可以解码出1帧
             if (frameFinished) {
@@ -157,7 +162,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
                 // 由于窗口的stride和帧的stride不同，因此需要逐行复制
                 int h;
                 for (int h = 0; h < videoHeight; ++h) {
-                    memccpy(dst + h * dstStride, src + h * srcStride, srcStride);
+                    memcpy(dst + h * dstStride, src + h * srcStride, srcStride);
                 }
                 ANativeWindow_unlockAndPost(nativeWindow);
             }
@@ -171,7 +176,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     // 释放YUV图像帧
     av_free(pFrame);
     // 关闭解码器
-    avcodec_close(pCodecCtx);
+    avcodec_free_context(&pCodecCtx);
     // 关闭视频文件
     avformat_close_input(&pFormatContext);
     return 0;
