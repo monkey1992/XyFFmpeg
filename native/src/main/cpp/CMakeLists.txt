@@ -107,6 +107,7 @@ target_link_libraries( # Specifies the target library.
         postproc
         swresample
         swscale
+        android
         ${log-lib})
 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")

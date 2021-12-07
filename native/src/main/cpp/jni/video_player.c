@@ -14,11 +14,7 @@
 #include "../include/libavutil/avutil.h"
 #include "../include/libavutil/imgutils.h"
 
-#define LOG_TAG 'video_player'
-
-int printLog(int prio, const char *fmt, ...) {
-    __android_log_print(prio, LOG_TAG, "%s", fmt);
-}
+const char *LOG_TAG = (const char *) "video_player";
 
 /*
 * Class:     com_xy_ffmpeg_VideoPlayer
@@ -38,10 +34,10 @@ JNIEXPORT jstring JNICALL Java_com_xy_ffmpeg_VideoPlayer_test
  */
 JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
         (JNIEnv *env, jobject object, jstring url, jobject surface) {
-    printLog(ANDROID_LOG_DEBUG, "start play video... url");
+    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "start play video url : %s", (char *) url);
     // 视频url
     const char *file_name = (*env)->GetStringUTFChars(env, url, JNI_FALSE);
-    printLog(ANDROID_LOG_DEBUG, "start play video... url %s", file_name);
+    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "start play video file_name : %s", file_name);
 
     avdevice_register_all();
 
@@ -49,13 +45,13 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
 
     // 打开视频文件
     if (avformat_open_input(&pFormatContext, file_name, NULL, NULL) != 0) {
-        printLog(ANDROID_LOG_DEBUG, "Couldn't open file:%s\n", file_name);
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Couldn't open url : %s", file_name);
         return -1;
     }
 
     // 检索流信息
     if (avformat_find_stream_info(pFormatContext, NULL) < 0) {
-        printLog(ANDROID_LOG_DEBUG, "Couldn't find stream information.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Couldn't find stream information.");
         return -1;
     }
 
@@ -68,7 +64,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
         }
     }
     if (videoStream == -1) {
-        printLog(ANDROID_LOG_DEBUG, "Didn't find a video stream.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Didn't find a video stream.");
         return -1; // 找不到视频流，返回-1
     }
 
@@ -81,12 +77,12 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     AVCodecContext *pCodecCtx = avcodec_alloc_context3(pCodec);
 
     if (pCodec == NULL) {
-        printLog(ANDROID_LOG_DEBUG, "Codec not found.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Codec not found.");
         return -1; // 找不到视频解码器，返回-1
     }
 
     if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0) {
-        printLog(ANDROID_LOG_DEBUG, "Could not open codec.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Could not open codec.");
         return -1; // 打开解码器失败，返回-1
     }
 
@@ -102,7 +98,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
                                      WINDOW_FORMAT_RGBA_8888);
     ANativeWindow_Buffer windowBuffer;
     if (avcodec_open2(pCodecCtx, pCodec, NULL)) {
-        printLog(ANDROID_LOG_DEBUG, "Could not open codec.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Could not open codec.");
         return -1;
     }
 
@@ -111,7 +107,7 @@ JNIEXPORT jint JNICALL Java_com_xy_ffmpeg_VideoPlayer_playVideo
     //用于渲染
     AVFrame *pFrameRGBA = av_frame_alloc();
     if (pFrameRGBA == NULL || pFrame == NULL) {
-        printLog(ANDROID_LOG_DEBUG, "Could not allocate video frame.");
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Could not allocate video frame.");
         return -1;
     }
 
